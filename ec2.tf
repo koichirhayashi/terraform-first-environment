@@ -29,29 +29,10 @@ resource "aws_key_pair" "key_pair" {
   public_key = tls_private_key.keygen.public_key_openssh
 }
 
-/*
-resource "local_file" "private_key_pem" {
-  filename = local.private_key_file
-  content  = tls_private_key.keygen.private_key_pem
-  provisioner "local-exec" {
-    command = "chmod 600 ${local.private_key_file}"
-  }
+resource "aws_key_pair" "key_pair_2"{
+  key_name = "${var.project}-key-2"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC++L6RVhDfHnPVZwrnpKYmLmNIX50kKLEAK+s99YUCK6ftPi9k8EKFLKRz6RXfAZkfLTzm/4akSfNjG7/5rUNAVuZoTJ821YPDkjXSQn2TzXngnB2nQHC/PRHE5CizeZmwo8KwxUzoeLwUsSY0NvkSxmQMxMuSQ8AkJFtCknZb9PNFd8v5dVU5yValOouOBrRn+E54hG4c0D4Iw8e3BBEYzXGRtpzXjlMBZNv024HOFfRnoLpxqc7b0/m5ZkOVf5TKNQgoymilD9mV4IBrCffnEW+3ihI25KEqaGqMrH788tebd4Tn4I3EBK/tvDASpUIFnIq+lxjXZFhZXnQXVUWa4ZZ+M4c0J4KKjSakmQPzo3dL/eZV6b29N5b4c22CMSB9C2jo8sM54Yma0TXvtGp3CWoEsfbrXglYutiln+rzWLgN6XcwHWMyIyxYtSRVmcCzJnLQ5Vqc2ZGUXqCpRKwoCJsdZpwVttzy0FLdRd8RxbES5pFfGs3xtwpx58RmhEHMt0iJlv5ApCZh7jhayoMu5pXveS9SaVgAke/dOQCBkGt8xWXzXeG/AyKsysc5QWP+JSJ5hoeMVTkBIZy6R9AP881XjOHgcJBoxqPbp05S3Cgv+8jxKd6VTpGsQHXhoOlU5hqiK5n5yftUFwu38v/VyWaWtNNoz+J9pZjtqGzuDQ== hayashi-terraform-key"
 }
-
-resource "local_file" "public_key_pem" {
-  filename = local.public_key_file
-  content  = tls_private_key.keygen.public_key_pem
-  provisioner "local-exec" {
-    command = "chmod 600 ${local.public_key_file}"
-  }
-}
-
-resource "aws_key_pair" "key_pair" {
-  key_name   = "${var.project}-key"
-  public_key = tls_private_key.keygen.public_key_pem
-  //public_key = file(local.public_key_file)
-}
-*/
 
 resource "aws_security_group" "allow_ssh" {
   name        = "${var.project}-allow-ssh"
@@ -97,6 +78,17 @@ resource "aws_instance" "instance" {
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
   tags = {
     Name = "${var.project}-instance"
+  }
+  }
+
+resource "aws_instance" "instance-2" {
+  ami                    = "ami-05207c56c1b903d1a"
+  instance_type          = "t3.micro"
+  key_name               = aws_key_pair.key_pair_2.key_name
+  subnet_id              = aws_subnet.yk_live_public_1a.id
+  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
+  tags = {
+    Name = "${var.project}-instance-2"
   }
   }
 
