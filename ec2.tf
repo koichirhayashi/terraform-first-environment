@@ -82,13 +82,13 @@ resource "aws_instance" "instance" {
   }
 
 resource "aws_instance" "instance-2" {
-  ami                    = "ami-05207c56c1b903d1a"
+  ami                    = "ami-0441ed744e4d88c70"
   instance_type          = "t3.micro"
   key_name               = aws_key_pair.key_pair_2.key_name
   subnet_id              = aws_subnet.yk_live_public_1a.id
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
   tags = {
-    Name = "${var.project}-instance-2"
+    Name = "Cloudwatch-test-ec2"
   }
   }
 
